@@ -4,17 +4,88 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Webhook Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px 30px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      color: #007BFF;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 1.1rem;
+      color: #555;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 15px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      resize: none;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #responseMessage {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .error {
+      color: red;
+    }
+  </style>
 </head>
 <body>
-  <h1>Webhook Test Interface</h1>
-  
-  <form id="webhookForm">
-    <label for="data">Enter data for webhook:</label>
-    <textarea id="data" rows="4" cols="50"></textarea><br>
-    <button type="submit">Send Webhook</button>
-  </form>
-
-  <p id="responseMessage" style="margin-top: 20px; color: green;"></p>
+  <div class="container">
+    <h1>Webhook Test Interface</h1>
+    <form id="webhookForm">
+      <label for="data">Enter data for webhook:</label>
+      <textarea id="data" rows="4" placeholder="Enter your webhook data here..."></textarea><br>
+      <button type="submit">Send Webhook</button>
+    </form>
+    <p id="responseMessage"></p>
+  </div>
 
   <script>
     const form = document.getElementById('webhookForm');
@@ -26,24 +97,32 @@
       const data = document.getElementById('data').value.trim();
       
       if (!data) {
-        alert('Please enter some data');
+        responseMessage.textContent = 'Please enter some data.';
+        responseMessage.className = 'error';
         return;
       }
 
-      const response = await fetch('http://localhost:3000/api/webhook', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ data })
-      });
+      try {
+        const response = await fetch('http://localhost:3000/api/webhook', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ data })
+        });
 
-      const result = await response.json();
-      
-      if (result.message) {
-        responseMessage.textContent = result.message;
-      } else {
-        responseMessage.textContent = 'Webhook sent successfully!';
+        const result = await response.json();
+
+        if (result.message) {
+          responseMessage.textContent = result.message;
+          responseMessage.className = 'success';
+        } else {
+          responseMessage.textContent = 'Webhook sent successfully!';
+          responseMessage.className = 'success';
+        }
+      } catch (error) {
+        responseMessage.textContent = 'Error sending webhook. Please try again.';
+        responseMessage.className = 'error';
       }
     });
   </script>
