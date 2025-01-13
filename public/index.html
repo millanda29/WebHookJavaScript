@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webhook Test</title>
+</head>
+<body>
+  <h1>Webhook Test Interface</h1>
+  
+  <form id="webhookForm">
+    <label for="data">Enter data for webhook:</label>
+    <textarea id="data" rows="4" cols="50"></textarea><br>
+    <button type="submit">Send Webhook</button>
+  </form>
+
+  <p id="responseMessage" style="margin-top: 20px; color: green;"></p>
+
+  <script>
+    const form = document.getElementById('webhookForm');
+    const responseMessage = document.getElementById('responseMessage');
+    
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const data = document.getElementById('data').value.trim();
+      
+      if (!data) {
+        alert('Please enter some data');
+        return;
+      }
+
+      const response = await fetch('http://localhost:3000/api/webhook', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data })
+      });
+
+      const result = await response.json();
+      
+      if (result.message) {
+        responseMessage.textContent = result.message;
+      } else {
+        responseMessage.textContent = 'Webhook sent successfully!';
+      }
+    });
+  </script>
+</body>
+</html>
